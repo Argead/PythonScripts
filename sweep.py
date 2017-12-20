@@ -51,8 +51,8 @@ def set_timestamps():
     timestamps = tempfile.readlines()
     timestamps.pop(0)
     pattern_to_remove = '^[-|r|w|x]{10}\s\d+\s[A-Za-z0-9]+\s[A-Za-z0-9]+\s+\d+\s+'    
-    for line in timestamps:
-        line = re.sub(pattern_to_remove, '', line)
+    for timestamp in timestamps:
+        line = re.sub(pattern_to_remove, '', timestamp)
         line = line.rstrip() #remove the newline character
         line = line.split(' ')
         if os.path.isfile(line[-1]):        
@@ -69,11 +69,14 @@ def set_timestamps():
 
             command = 'touch -d "{}" {}'.format(new_timestamp, line[-1])
             subprocess.call(command, shell=True)
+            status = '\rTimestamps replaced: {}'.format(timestamps.index(timestamp)+1)
+            sys.stdout.write(status)
+            sys.stdout.flush()
 
     #delete the tempfile
     tempfile.close()
     subprocess.call('rm ._tempfile', shell=True)
-    print('Reset Completed')    
+    print('\nReset Completed')
 
 if __name__ == '__main__':
     if args.mode == 'get':
