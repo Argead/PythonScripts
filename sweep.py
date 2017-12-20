@@ -11,7 +11,7 @@ import sys
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('mode', type=str, choices=['get', 'set'], help="Set scrit mode to get (save timestamps) or set (overwrite timestamps).")
+parser.add_argument('mode', type=str, choices=['get', 'set'], help="Set script mode to 'get' (save timestamps) or 'set' (overwrite timestamps).")
 parser.add_argument('-d', '--directory', type=str, help='Directory to collect timestamps in. Defaults to CWD.', default='.')
 args = parser.parse_args()
 
