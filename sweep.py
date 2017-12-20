@@ -46,7 +46,7 @@ def get_timestamps():
     print('Completed')
 
 def set_timestamps():
-    print('Resetting timestamps')
+    print('Resetting timestamps...')
     tempfile = open('._tempfile', 'r')
     timestamps = tempfile.readlines()
     timestamps.pop(0)
@@ -72,7 +72,8 @@ def set_timestamps():
 
     #delete the tempfile
     tempfile.close()
-    subprocess.call('rm ._tempfile', shell=True)    
+    subprocess.call('rm ._tempfile', shell=True)
+    print('Reset Completed')    
 
 if __name__ == '__main__':
     if args.mode == 'get':
