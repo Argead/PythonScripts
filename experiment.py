@@ -27,6 +27,7 @@ def initialize_directory():
     #Create directory for static files.
     subprocess.call('mkdir static', shell=True)
     subprocess.call('touch static/index.html', shell=True)
+    subprocess.call('touch static/style.css', shell=True)
     
     #Create the app.py file for the project.
     subprocess.call('touch app.py', shell=True)
@@ -89,22 +90,7 @@ def initialize_directory():
     app_file.write('\tif re.match(email_pattern, email):' + os.linesep)
     app_file.write('\t\tcurrent_time = str(datetime.datetime.now())' + os.linesep)
     app_file.write('\t\tip = str(bottle.request.get("REMOTE_ADDR"))' + os.linesep)
-    
-    
-    
-    
     app_file.write('\t\tcommand = "INSERT INTO emails VALUES(\'{}\', \'{}\', \'{}\')".format(email, current_time, ip)' + os.linesep)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     app_file.write('\t\tcursor.execute(command)' + os.linesep)
     app_file.write('\t\tconnection.commit()' + os.linesep)
     app_file.write('\treturn "Thank you for registering! Expect updates soon."'+os.linesep)
@@ -116,6 +102,7 @@ def initialize_directory():
     index_file.write('<html>' + os.linesep)
     index_file.write('<head>' + os.linesep)
     index_file.write('<title>Experiment Page</title>' + os.linesep)
+    index_file.write('<link href="style.css" type="text/css" rel="stylesheet">' + os.linesep)
     index_file.write('</head>' + os.linesep)
     index_file.write('<body>' + os.linesep)
     index_file.write('<h1>Prodct Description!</h1>' + os.linesep)
