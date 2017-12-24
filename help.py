@@ -11,15 +11,9 @@ parser.add_argument('modules', type=str, nargs='+', help="List the arguments you
 args = parser.parse_args()
 
 
-#TODO: What if you want the help text for a module outside of the standard library?
-#TODO: What if you want the help text for a module that has to be imported first?
-
-
 def iterate_over_modules(modules):
     for module in modules:
         get_help_text(module)
-
-
 
 
 def get_help_text(module='None'):
