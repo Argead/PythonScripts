@@ -26,13 +26,13 @@ def search_file():
             break
         linecount += 1
         if args.exact:
-            pattern = args.string
-            if re.match(pattern, next_line):
+            pattern = ' ' + args.string + ' '
+            if re.search(pattern, next_line):
                 if args.verbose:
                     print(next_line)
                 else:
                     print('\"{}\" was found on line {}.'.format(args.string, linecount))
-        
+                instances += 1
         elif args.string in next_line:
             if args.verbose:
                 print(next_line)
