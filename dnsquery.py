@@ -3,6 +3,7 @@
 CLI script to test that DNS config is correct.
 """
 import argparse
+import os
 import subprocess
 import urllib.request
 
@@ -32,7 +33,7 @@ def run_dns_queries():
     output_file.write('\n\nDIG\n')
     dig_command = 'dig {} '.format(args.domain)
     if args.digoption:
-        dig_command += args.digoption
+        dig_command += args.digoption[0]
     dig_call = subprocess.Popen(dig_command, shell=True, stdout=subprocess.PIPE)
     if type(dig_call) != int:
         output_file.write(dig_call.communicate()[0].decode())
