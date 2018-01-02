@@ -56,7 +56,7 @@ def generate_serial_number():
         while len(last_serial) < len(config['default'][args.type]['current']):
             last_serial = '0' + last_serial
         new_serial = datestamp + args.type[0].upper() + last_serial
-        print('New {} serial number: {}'.format(args.type.capitalize(), new_serial))
+        sys.stdout.write('New {} serial number: {}\n'.format(args.type.capitalize(), new_serial))
         config['default'][args.type]['current'] = new_serial
     
 
