@@ -4,6 +4,7 @@ CLI script to generate simple, incremental serial numbers for prototypes, compon
 """
 import argparse
 import datetime
+import os.path
 import shelve
 import sys
 
@@ -37,9 +38,14 @@ def create_config_shelve():
         config['default'] = config_obj
         
     print('Configuration complete')
-
     
-def generate_serial_number():
+    
+def test_for_config():
+    return os.path.exists('serial_config'):
+
+
+def generate_serial_number(serial_type):
+    #TODO: for experiment type, reset serial number to 1 if new date...how to do that?
     year = str(datetime.datetime.now().year)[2:]
     month = str(datetime.datetime.now().month)
     if len(month) < 2:
@@ -49,19 +55,20 @@ def generate_serial_number():
         date = '0' + date
     datestamp = year + month + date
     with shelve.open('serial_config') as config:
-        last_serial = config['default'][args.type]['current']
+        last_serial = config['default'][serial_type]['current']
         last_serial = int(last_serial)
-        last_serial += config['default'][args.type]['increment']
+        last_serial += config['default'][serial_type]['increment']
         last_serial = str(last_serial)
-        while len(last_serial) < len(config['default'][args.type]['current']):
+        while len(last_serial) < len(config['default'][serial_type]['current']):
             last_serial = '0' + last_serial
-        new_serial = datestamp + args.type[0].upper() + last_serial
-        sys.stdout.write('New {} serial number: {}\n'.format(args.type.capitalize(), new_serial))
-        config['default'][args.type]['current'] = new_serial
+        new_serial = datestamp + serial_type[0].upper() + last_serial
+        sys.stdout.write('New {} serial number: {}\n'.format(serial_type.capitalize(), new_serial))
+        config['default'][serial_type]['current'] = new_serial
     
 
 if __name__ == '__main__':
     if args.mode == 'config':
-        create_config_shelve()
+        test_for_config()
+        # create_config_shelve()
     elif args.mode == 'generate':
-        generate_serial_number()
+        generate_serial_number(args.type)
