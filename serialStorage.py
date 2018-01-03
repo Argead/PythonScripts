@@ -17,11 +17,51 @@ def create_database(db_name):
     if not test_for_database(db_name):
         conn = sqlite3.connect(db_name)
         cur = conn.cursor()
-        cur.execute('''create table prototypes (index, serial_number, name)''')
-        cur.execute('''create table components (index, serial_number, name)''')
-        cur.execute('''create table experiments (index, serial_number, name) ''')
+        cur.execute('''create table prototypes 
+                    (index integer primary key, 
+                     serial_number varchar(25) not null,
+                     name varchar(50))''')
+        cur.execute('''create table components 
+                    (index integer primary key, 
+                     serial_number varchar(25) not null, 
+                     name varchar(50)''')
+        cur.execute('''create table experiments 
+                    (index integer primary key, 
+                     serial_number varchar(25) not null, 
+                     name varchar(50) ''')
         cur.commit()
         conn.close()
         print('Database created successfully')
     else:
         print('Database already exists')
+
+
+def add_record(db_name, serial_type, serial_number, name=''):
+    if not test_for_database(db_name):
+        create_databse(db_name)
+    conn = sqlite3.connect(db_name)
+    cur = conn.cursor()
+    if serial_type == 'prototype':
+        cur.execute('insert into prototypes(serial_number, name) values (?, ?)', (serial_number, name))
+    elif serial_type == 'component':
+        cur.execute('insert into components(serial_number, name) values (?, ?)', (serial_number, name))
+    elif serial_type == 'experiment':
+        cur.execute('insert into experiments(serial_number, name) values (?, ?)', (serial_number, name))
+    cur.commit()
+    curr.close()
+    print('Record added')
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mode', type=str, choices=['setup', 'add'], help='Mode to run script in: db setup, or adding records to a db.')
+    parser.add_argument('-d', '--database', default='serial.db', type=str, help='Name for database. Defaults to "serial.db".')
+    parser.add_argument('-t', '--type', default='prototype', type=str, help='Type of serial number being added. Can be either prototype, component, or experiment. Defaults to prototype. Use with add mode.')
+    parser.add_argument('-s', '--serial', type=str, help='Serial number being added. Use with add mode.')
+    parser.add_argument('-n', '--name', type=str, default='', help='Name associated with serial number. Use with add mode.')
+    args = parser.parse_args()
+    if args.mode == 'setup':
+        create_database(args.database)
+    elif args.mode == 'add':
+        add_record(args.database, args.type, args.serial, args.name)
+        
