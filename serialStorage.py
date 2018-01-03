@@ -18,25 +18,26 @@ def create_database(db_name):
         #TODO: replace this branch with an error and a try/except(?)
     if not test_for_database(db_name):
         conn = sqlite3.connect(db_name)
-        cur = conn.cursor()
-        cur.execute('''create table prototypes 
-                    (index integer primary key, 
+        try:
+            with conn:
+                conn.execute('''create table prototypes 
+                    (index_number integer primary key, 
                      serial_number varchar(25) not null,
                      name varchar(50))''')
-        cur.execute('''create table components 
-                    (index integer primary key, 
+                conn.execute('''create table components 
+                    (index_number integer primary key, 
                      serial_number varchar(25) not null, 
-                     name varchar(50)''')
-        cur.execute('''create table experiments 
-                    (index integer primary key, 
+                     name varchar(50))''')
+                conn.execute('''create table experiments 
+                    (index_number integer primary key, 
                      serial_number varchar(25) not null, 
-                     name varchar(50) ''')
-        cur.commit()
-        conn.close()
-        print('Database created successfully')
+                     name varchar(50))''')
+                print('Database created successfully')
+        except sqlite3.Error as e:
+            print(e)
     else:
         print('Database already exists')
-
+ 
 
 def delete_database(db_name):
     if test_for_databse(db_name) and os.path.splitext(db_name)[1] == '.db':
@@ -50,43 +51,75 @@ def add_record(db_name, serial_type, serial_number, name=''):
     if not test_for_database(db_name):
         create_databse(db_name)
     conn = sqlite3.connect(db_name)
-    cur = conn.cursor()
-    if serial_type == 'prototype':
-        cur.execute('insert into prototypes(serial_number, name) values (?, ?)', (serial_number, name))
-    elif serial_type == 'component':
-        cur.execute('insert into components(serial_number, name) values (?, ?)', (serial_number, name))
-    elif serial_type == 'experiment':
-        cur.execute('insert into experiments(serial_number, name) values (?, ?)', (serial_number, name))
-    cur.commit()
-    curr.close()
-    print('Record added')
+    try:
+        with conn:
+            if serial_type == 'prototype':
+                conn.execute('insert into prototypes(serial_number, name) values (?, ?)', (serial_number, name))
+            elif serial_type == 'component':
+                conn.execute('insert into components(serial_number, name) values (?, ?)', (serial_number, name))
+            elif serial_type == 'experiment':
+                conn.execute('insert into experiments(serial_number, name) values (?, ?)', (serial_number, name))
+            print('Record added')
+    except sqlite3.Error:
+        print('Operation failed')
+    
+
+    
     
     
 def delete_record(db_name, serial_type, serial_number):
     if test_for_database(db_name):
         conn = sqlite3.connect(db_name)
-        cur = con.cursor()
-        if serial_type == 'prototype':
-            cur.execute('delete from prototypes where serial_number=?', (serial_number,))
-        elif serial_type == 'component':
-            cur.execute'delete from components where serial_number=?', (serial_number,))
-        elif serial_type == 'experiment':
-            cur.execute('delete from experiments where serial_number=?', (serial_number,))
+        try:
+            with conn:
+                if serial_type == 'prototype':
+                    conn.execute('delete from prototypes where serial_number=?', (serial_number,))
+                elif serial_type == 'component':
+                    conn.execute('delete from components where serial_number=?', (serial_number,))
+                elif serial_type == 'experiment':
+                    conn.execute('delete from experiments where serial_number=?', (serial_number,))
+        except sqlite3.Error:
+            print('Operation failed')
 
 
 def get_all_serialnumbers(db_name, serial_type):
     if test_for_database(db_name):
         conn = sqlite3.connect(db_name)
-        cur = conn.cursor()
-        if serial_type == 'prototype':
-            cur.execute('select * from prototypes')
-            return cur.fetchall()
-        elif serial_type == 'component':
-            cur.execute('select * from components')
-            return cur.fetchall()
-        elif serial_type == 'experiment':
-            cur.execute('select * from experiments')
-            return cur.fetchall()
+        try:
+            with conn:
+                if serial_type == 'prototype':
+                    conn.execute('select * from prototypes')
+                elif serial_type == 'component':
+                    conn.execute('select * from components')
+                elif serial_type == 'experiment':
+                    conn.execute('select * from experiments')
+        except sqlite3.Error:
+            print('Operation failed')
+
+
+def update_name(db_name, serial_type, serial_number, new_name):
+    if test_for_database(db_name):
+        conn = sqlite3.connect(db_name)
+        try:
+            with conn:
+                if serial_type == 'prototype':
+                    conn.execute('update prototypes set name=? where serial_number=?', (new_name, serial_number))
+                elif serial_type == 'component':
+                    conn.execute('update components set name=? where serial_number=?', (new_name, serial_number))
+                elif serial_type == 'experiment':
+                    conn.execute('update experiments set name=? where serial_number=?', (new_name, serial_number))
+        except sqlite3.Error:
+            print('Operation failed')
+
+
+def summary_info(db_name, serial_type):
+    if test_for_database(db_name):
+        conn = sqlite3.connect(db_name)
+        try:
+            with conn:
+                conn.execute('select count(serial_number) from ?', (serial_type,))
+        except sqlite3.Error:
+            print('Operation failed')
 
 
 if __name__ == '__main__':
