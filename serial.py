@@ -2,17 +2,10 @@
 """
 CLI script to generate simple, incremental serial numbers for prototypes, components, and tests.
 """
-import argparse
 import datetime
 import os.path
 import shelve
 import sys
-
-parser = argparse.ArgumentParser(description='Generate new serial numbers.')
-parser.add_argument('mode', choices=['config', 'generate'], type=str, help='Either create a configuration file for the serial number generator, or generate a serial number.')
-parser.add_argument('-o', '--override', action='store_true', help='If running the script in config mode, override any existing configuration file without a second prompt to the caller or user.')
-parser.add_argument('-t', '--type', choices=['prototype', 'component', 'experiment'], type=str, help='If running the script in generate mode, choose the type of serial number to generate. Defaults to prototype.', default='prototype')
-args = parser.parse_args()
 
 
 def create_config_shelve():
@@ -41,7 +34,7 @@ def create_config_shelve():
     
     
 def test_for_config():
-    return os.path.exists('serial_config'):
+    return os.path.exists('serial_config')
 
 
 def generate_serial_number(serial_type):
@@ -54,19 +47,29 @@ def generate_serial_number(serial_type):
     if len(date) < 2:
         date = '0' + date
     datestamp = year + month + date
-    with shelve.open('serial_config') as config:
+    
+    with shelve.open('serial_config', writeback=True) as config:
         last_serial = config['default'][serial_type]['current']
-        last_serial = int(last_serial)
-        last_serial += config['default'][serial_type]['increment']
-        last_serial = str(last_serial)
-        while len(last_serial) < len(config['default'][serial_type]['current']):
-            last_serial = '0' + last_serial
-        new_serial = datestamp + serial_type[0].upper() + last_serial
-        sys.stdout.write('New {} serial number: {}\n'.format(serial_type.capitalize(), new_serial))
-        config['default'][serial_type]['current'] = new_serial
+        int_serial = int(last_serial)
+        int_serial += config['default'][serial_type]['increment']
+        str_serial = str(int_serial)
+        while len(str_serial) < len(config['default'][serial_type]['current']):
+            str_serial = '0' + str_serial
+        new_serial = datestamp + serial_type[0].upper() + str_serial
+        config['default'][serial_type]['current'] = str_serial
+
+    return new_serial
     
 
 if __name__ == '__main__':
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Generate new serial numbers.')
+    parser.add_argument('mode', choices=['config', 'generate'], type=str, help='Either create a configuration file for the serial number generator, or generate a serial number.')
+    parser.add_argument('-o', '--override', action='store_true', help='If running the script in config mode, override any existing configuration file without a second prompt to the caller or user.')
+    parser.add_argument('-t', '--type', choices=['prototype', 'component', 'experiment'], type=str, help='If running the script in generate mode, choose the type of serial number to generate. Defaults to prototype.', default='prototype')
+    args = parser.parse_args()
+
     if args.mode == 'config':
         test_for_config()
         # create_config_shelve()
