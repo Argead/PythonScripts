@@ -2,11 +2,13 @@
 """
 CLI interface for working with serial number scripts.
 """
+import pprint
 from serial import *
 from serialStorage import *
+from sys import stdout
 
 
-def create_and_store_serial(serial_type, name='', db_name='serial.db'):
+def create_and_store_serial(serial_type, name='', db_name='serial.db', printSerial=False):
     try:
         #Create new serial number. Create a config file if needed.
         if not test_for_config():
@@ -15,28 +17,32 @@ def create_and_store_serial(serial_type, name='', db_name='serial.db'):
         #Check that the database exists. Create it if not.
         if not test_for_database(db_name):
             create_dtabase(db_name)        
-        #add new serial number to the database
-        print(new_serial)
+        #Optionall print new serial number
+        if printSerial:
+            stdout.write(new_serial + '\n')
+        #Add new serial number to the database
         add_record(db_name, serial_type, new_serial, name)
     except Exception as e:
         print(e)
 
 def retrieve_serials_from_storage(serial_type, db_name='serial.db'):
     try:
-        serials = get_all_serialnumber(db_name, serial_type)
+        serials = get_all_serialnumbers(db_name, serial_type)
         if args.output == 'file':
             with open('serials.txt', 'w') as new_file:
-                new_file.write(serials)
+                for record in serials:
+                    new_file.write(record)
         elif args.output == 'console':
-            print(serials)
-        
+            print('INDEX, SERIAL, NAME')
+            for record in serials:
+                pprint.pprint(record)
     except Exception as e:
         print(e)
 
 def get_serials_summary(serial_type, db_name='serial.db'):
     try:
         result = summary_info(db_name, serial_type)
-        print(result)
+        print('{} {} serial numbers'.format(result, serial_type))
     except Exception as e:
         print(e)
 
@@ -48,10 +54,12 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--database', default='serial.db', type=str, help='Database name. Defaults to serial.db.')
     parser.add_argument('-t', '--type', choices=['prototype', 'component', 'experiment'], default='prototype', type=str, help='Choose type of serial number to create and add to DB. Defaults to prototype.')
     parser.add_argument('-n', '--name', type=str, default='', help='Optional name to associate with new serial number. Use with add mode. Defaults to empty string.')
+    parser.add_argument('-o', '--output', type=str, choices=['file','console'], default='console', help='Choose to write output of db query to file serials.txt or to console. Defaults to console.')
+    parser.add_argument('-p', '--print', action='store_true', default=False, help='Print the new serial number to stdout.')
     args = parser.parse_args()
     
     if args.mode == 'add':
-        create_and_store_serial(args.type, args.name, args.database)
+        create_and_store_serial(args.type, args.name, args.database, args.print)
     elif args.mode == 'get':
         retrieve_serials_from_storage(args.type, args.database)
     elif args.mode == 'summary':
