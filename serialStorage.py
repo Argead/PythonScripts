@@ -60,8 +60,8 @@ def add_record(db_name, serial_type, serial_number, name=''):
             elif serial_type == 'experiment':
                 conn.execute('insert into experiments(serial_number, name) values (?, ?)', (serial_number, name))
             print('Record added')
-    except sqlite3.Error:
-        print('Operation failed')
+    except sqlite3.Error as e:
+        print(e)
     
 
     
@@ -78,8 +78,8 @@ def delete_record(db_name, serial_type, serial_number):
                     conn.execute('delete from components where serial_number=?', (serial_number,))
                 elif serial_type == 'experiment':
                     conn.execute('delete from experiments where serial_number=?', (serial_number,))
-        except sqlite3.Error:
-            print('Operation failed')
+        except sqlite3.Error as e:
+            print(e)
 
 
 def get_all_serialnumbers(db_name, serial_type):
@@ -93,8 +93,8 @@ def get_all_serialnumbers(db_name, serial_type):
                     conn.execute('select * from components')
                 elif serial_type == 'experiment':
                     conn.execute('select * from experiments')
-        except sqlite3.Error:
-            print('Operation failed')
+        except sqlite3.Error as e:
+            print(e)
 
 
 def update_name(db_name, serial_type, serial_number, new_name):
@@ -108,8 +108,8 @@ def update_name(db_name, serial_type, serial_number, new_name):
                     conn.execute('update components set name=? where serial_number=?', (new_name, serial_number))
                 elif serial_type == 'experiment':
                     conn.execute('update experiments set name=? where serial_number=?', (new_name, serial_number))
-        except sqlite3.Error:
-            print('Operation failed')
+        except sqlite3.Error as e:
+            print(e)
 
 
 def summary_info(db_name, serial_type):
@@ -118,8 +118,8 @@ def summary_info(db_name, serial_type):
         try:
             with conn:
                 conn.execute('select count(serial_number) from ?', (serial_type,))
-        except sqlite3.Error:
-            print('Operation failed')
+        except sqlite3.Error as e:
+            print(e)
 
 
 if __name__ == '__main__':
