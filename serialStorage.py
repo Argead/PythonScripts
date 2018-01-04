@@ -88,11 +88,12 @@ def get_all_serialnumbers(db_name, serial_type):
         try:
             with conn:
                 if serial_type == 'prototype':
-                    conn.execute('select * from prototypes')
+                    result = conn.execute('select * from prototypes')
                 elif serial_type == 'component':
-                    conn.execute('select * from components')
+                    result = conn.execute('select * from components')
                 elif serial_type == 'experiment':
-                    conn.execute('select * from experiments')
+                    result = conn.execute('select * from experiments')
+            return result.fetchall()
         except sqlite3.Error as e:
             print(e)
 
@@ -117,7 +118,13 @@ def summary_info(db_name, serial_type):
         conn = sqlite3.connect(db_name)
         try:
             with conn:
-                conn.execute('select count(serial_number) from ?', (serial_type,))
+                if serial_type == 'prototype':
+                    result = conn.execute('select  count(serial_number) from prototypes')
+                elif serial_type == 'component':
+                    result = conn.execute('select count(serial_number) from components')
+                elif serial_type == 'experiment':
+                    result = conn.execute('select count(serial_number) from experiments')
+                return result.fetchall()[0][0]
         except sqlite3.Error as e:
             print(e)
 
