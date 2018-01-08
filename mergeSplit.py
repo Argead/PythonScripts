@@ -5,8 +5,7 @@ CLI utility to split or join files.
 import os
 import sys
 
-
-def merge_files(directory, newFile, readSize):
+def merge_files(newFile, directory, readSize):
     with open(newFile, 'wb') as new_file_handle:
         pieces = os.listdir(directory)
         pieces.sort()
@@ -21,7 +20,7 @@ def merge_files(directory, newFile, readSize):
 
 
 #TODO: implement glob
-
+#TODO: implement try/except in both functions
 
 def split_file(target, directory, readSize):
     if not os.path.exists(directory):
@@ -45,3 +44,16 @@ def split_file(target, directory, readSize):
     
 if __name__ == '__main__':
     import argparse
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mode', choices=['merge', 'split'], type=str, help='choose whether to split a file into pieces, or to merge those pieces back into a single file')
+    parser.add_argument('target', type=str, help='for split mode, the target file to be split; for merge mode, the file to be created; provide an absolute file path or the script will use CWD')
+    parser.add_argument('directory', type=str, help='for split mode, directory where the split pieces are go to; for merge mode, the directory containing the pieces to be merged')
+    parser.add_argument('size', type=int, help='size of each piece of file to either be split or merged; should be a multiple of 2')
+    args = parser.parse_args()
+    
+    if args.mode == 'merge':
+        merge_files(args.target, args.directory, args.size)
+    elif args.mode == 'split':
+        split_file(args.target, args.directory, args.size)
+    
