@@ -20,10 +20,15 @@ def grep(pattern, file):
         if not os.path.exists(file):
             sys.stdout.write('Error: file does not exist\n')
             return matches
-        with open(file, 'r') as target:
-            for line in target.readlines():
-                if re_pattern.search(line):
-                    matches.append(line)
+        if os.path.isfile(file):
+            with open(file, 'r') as target:
+                for line in target.readlines():
+                    if re_pattern.search(line):
+                        matches.append(line)
+        elif os.path.isdir(file):
+            #TODO: implement logic and option flags for parsing directory
+            #each match will be a 2-item tuple of filename and matching line
+
     except re.error as e:
         sys.stderr.write(e)
         sys.stderr.write('{}\n'.format(sys.exc_info()[1]))
@@ -38,9 +43,13 @@ if __name__ == '__main__':
     result = grep(args.pattern, args.file)
     if len(result) > 0:
         for item in result:
-            file_str = '\033[1;35;40m {} '.format(args.file)
-            item_str = '\033[1;37;40m {}'.format(item)
+            if type(item) != tuple:
+                file_str = '\033[1;35;40m {} '.format(args.file)
+                item_str = '\033[1;37;40m {}'.format(item)
+                sys.stdout.write('{}\t{}'.format(file_str, item_str))
+            else:
+                #TODO: implement output logic for directory grepping
         
-            sys.stdout.write('{}\t{}'.format(file_str, item_str))
+            
     else:
         sys.stdout.write('No matches found in {} for {}\n'.format(args.file, args.pattern))
