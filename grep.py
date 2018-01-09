@@ -38,6 +38,9 @@ if __name__ == '__main__':
     result = grep(args.pattern, args.file)
     if len(result) > 0:
         for item in result:
-            sys.stdout.write(item)
+            file_str = '\033[1;35;40m {} '.format(args.file)
+            item_str = '\033[1;37;40m {}'.format(item)
+        
+            sys.stdout.write('{}\t{}'.format(file_str, item_str))
     else:
         sys.stdout.write('No matches found in {} for {}\n'.format(args.file, args.pattern))
