@@ -33,7 +33,7 @@ def grep(pattern, file, directories='recurse', quiet=False):
                     for dirFile in dirFiles:
                         with open(dirFile, 'r') as t:
                             for line in t.readlines():
-                                if re_pattern.serach(line):
+                                if re_pattern.search(line):
                                     match = (dirFile, line)
                                     matches.append(match)
             elif directories == 'read':
@@ -53,25 +53,24 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('pattern', type=str, help='regex pattern to match')
     parser.add_argument('file', type=str, help='file to search')
-    
     parser.add_argument('-d', '--directories', choices=['recurse', 'read', 'skip'], default='recurse', type=str, help='Choose whether to recursively apply grep to a directory, read the directory name, or skip the directory')
+    parser.add_argument('-c', '--count', action='store_true', help='count number of matches in total and print with results')
     parser.add_argument('-q', '--quiet', action='store_true', help='suppress normal print output of grep')
     
     args = parser.parse_args()
     result = grep(args.pattern, args.file, args.directories, args.quiet)
-    
-    if len(result) > 0:
+
+    if len(result) > 0 and not args.quiet:
         for item in result:
-            if type(item) != tuple:
+            if type(item) == tuple:
+                file_str = '\033[1;35;40m {} '.format(item[0])
+                item_str = '\033[1;37;40m {}'.format(item[1])
+                sys.stdout.write('{}\t{}\n'.format(file_str, item_str))
+            else:
                 file_str = '\033[1;35;40m {} '.format(args.file)
                 item_str = '\033[1;37;40m {}'.format(item)
-                if not args.quiet:
-                    sys.stdout.write('{}\t{}'.format(file_str, item_str))
-            else:
-                if not args.quiet:
-                    file_str = '\033[1;35;40m {} '.format(item[0])
-                    item_str = '\033[1;37;40m {}'.format(item[1])
-                    sys.stdout.write('{}\t{}'.format(file_str, item_str)
-
-    elif not args.quiet:
+                sys.stdout.write('{}\t{}\n'.format(file_str, item_str))
+        if args.count:
+            sys.stdout.write('Total number of matches: {}\n'.format(len(result)))
+    elif not args.queit:
         sys.stdout.write('No matches found in {} for {}\n'.format(args.file, args.pattern))
