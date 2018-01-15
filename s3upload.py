@@ -32,9 +32,15 @@ def upload_file_to_s3(bucket, targetFile):
     current_objects = s3.list_objects(Bucket=bucket_name)
     if not file_to_upload in current_objects:
         print('File upload unsuccessful')
-
+    else:
+        print('File upload completed')
 
 
 
 if __name__ == '__main__':
     import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('bucket', type=str, help='bucket to upload file to')
+    parser.add_argument('file', type=str, help='file you want to upload to s3')
+    args = parser.parse_args()
+    upload_file_to_s3(args.bucket, args.file)
