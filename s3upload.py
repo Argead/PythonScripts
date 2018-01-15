@@ -10,7 +10,6 @@ import os
 
 
 def get_aws_credentials():
-    #TODO: This is actually unnecessary, as AWS will check the OS environ variables if they are not passed into the boto3.client() call.
     aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID']
     aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
     return aws_access_key_id, aws_secret_access_key
