@@ -9,10 +9,15 @@ import boto3
 import os
 
 
-def upload_file_to_s3(bucket, targetFile):
+def get_aws_credentials():
     #TODO: This is actually unnecessary, as AWS will check the OS environ variables if they are not passed into the boto3.client() call.
     aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID']
     aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
+    return aws_access_key_id, aws_secret_access_key
+
+
+def upload_file_to_s3(bucket, targetFile):
+    aws_access_key_id, aws_secret_access_key = get_aws_credentials()
     #create s3 client
     s3 = boto3.client(
         's3',
@@ -25,9 +30,11 @@ def upload_file_to_s3(bucket, targetFile):
     buckets_list = [bucket['Name'] for bucket in buckets['Buckets']]
     if not bucket_name in bucket_list:
         s3.create_bucket(Bucket=bucket_name)
-    #Upload file
-    s4.upload_file(file_to_upload,  bucket_name, file_to_upload)
-
+    try:
+        #Upload file
+        s4.upload_file(file_to_upload,  bucket_name, file_to_upload)
+    except:
+        print('Error uploading file')
     #List the objects in the bucket
     current_objects = s3.list_objects(Bucket=bucket_name)
     if not file_to_upload in current_objects:
