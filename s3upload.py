@@ -31,7 +31,7 @@ def upload_file_to_s3(bucket, targetFile):
         s3.create_bucket(Bucket=bucket_name)
     try:
         #Upload file
-        s4.upload_file(file_to_upload,  bucket_name, file_to_upload)
+        s3.upload_file(file_to_upload,  bucket_name, file_to_upload)
     except:
         print('Error uploading file')
     #List the objects in the bucket
