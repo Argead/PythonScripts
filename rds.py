@@ -2,9 +2,18 @@
 
 import boto3
 
+def get_aws_credentials():
+    aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID']
+    aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
+    return aws_access_key_id, aws_secret_access_key
 
 def list_rds_instances():
-    rds = boto3.client('rds')
+    aws_access_key_id, aws_secret_access_key = get_aws_credentials()
+    rds = boto3.client(
+        'rds',
+        asw_access_key_id,
+        aws_secret_access_key
+    )
     try:
         dbs = rds.describe_db_instances()
         for db in dbs['DBInstances']:
@@ -18,7 +27,12 @@ def list_rds_instances():
         print(e)
 
 def create_rds_instance(identifier, masterUsername, masterUserPassword, dbInstanceClass, engine, allocatedStorage):
-    rds = boto3.client('rds')
+    aws_access_key_id, aws_secret_access_key = get_aws_credentials()
+    rds = boto3.client(
+        'rds',
+        asw_access_key_id,
+        aws_secret_access_key
+    )
     try:
         instance = rds.create_db_instance(
             DBInstanceIdentifier=identifier,
@@ -32,7 +46,12 @@ def create_rds_instance(identifier, masterUsername, masterUserPassword, dbInstan
         print(e)
         
 def end_rds_instance(database):
-    rds = boto3.client('rds')
+    aws_access_key_id, aws_secret_access_key = get_aws_credentials()
+    rds = boto3.client(
+        'rds',
+        asw_access_key_id,
+        aws_secret_access_key
+    )
     try:
         response = rds.delete_db_instance(
             DBInstanceIdentifier=database,
@@ -60,5 +79,3 @@ if __name__ == '__main__':
         create_rds_instance(args.identifier, args.masterUsername, args.masterUserPassword, args.dbInstanceClass, args.engine, args.allocatedStorage)
     elif args.mode == 'delete':
         end_rds_instance(args.database)
-    
-    
