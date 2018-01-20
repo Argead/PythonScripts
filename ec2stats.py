@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+"""
+CLI script to get stats for currently running EC2 instances and print them to console.
+"""
 
 import boto3
 
@@ -24,10 +27,22 @@ def dict_iterator(dictionary):
             line = '{}: {}'.format(key, dictionary[key])
             print(line)
     
+def get_ec2_stats():
+    aws_access_key_id, aws_secret_access_key = get_aws_credentials()
+    ec2 = boto3.client(
+        'ec2',
+        asw_access_key_id,
+        aws_secret_access_key
+    )
+    try:
+        response1 = ec2.describe_instances()
+        print('INSTANCES')
+        dict_iterator(response['Reservations']['Instances'])
+        response2 = ec2.describe_instance_status()
+        print('\n\nINSTANCE STATUS')
+        dict_iterator(response2)
+    except Exception as e:
+        print(e)
     
-
-
-        
-        
-    
-
+if __name__ == '__main__':
+    get_ec2_stats()
