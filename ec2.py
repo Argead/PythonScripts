@@ -59,8 +59,8 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--listOfInstances', nargs='+', help='list the instances you want to delete; use with delete mode')
     args = parser.parse_args()
     if args.mode == 'list':
-    
+        list_instances()
     elif args.mode == 'add':
-    
+        create_instance(args.imageID, args.minCount, args.maxCount, args.type)
     elif args.mode == 'delete':
-    
+        end_instance(args.listOfInstances)
