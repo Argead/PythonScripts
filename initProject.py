@@ -1,15 +1,8 @@
 #!/usr/bin/python3
 
-import argparse
 import os
 import subprocess
 import sys
-
-
-#first, create the needed directory in Projects
-#second, initialize the project with git
-#third, prompt the user to confirm if they want to connect to the project's remote repo; assumes that the remote repo already exists
-
 
 def create_project_directory(project, directory='.'):
     if directory == '.':
@@ -47,3 +40,22 @@ def initialize_directory():
     init = subprocess.Popen(['git', 'init'], stdout=subprocess.PIPE)
     init.communicate()[0]
     print('Project init complete')
+    
+def add_origin(userName, projectName):
+    repo_path = 'git@github.com:{}/{}.git'.format(userName, projectName)
+    origin = subprocess.Popen(['git', 'remote', 'add', 'origin', ])
+    remote_url = subprocess.Popen(['git', 'remote', 'set-url', 'origin', repo_path], stdout=subprocess.PIPE)
+    remote_url_result = remote_url.communicate()[0]
+    print('Origin added')
+    
+if __name__ == "__main__":
+    import argpase
+    parser = argparse.ArgumentParser()
+    parser.add_argument('project', type=str)
+    parser.add_argument('directory', default='.', type=str)
+    parser.add_argument('userName', type=str)
+    args = parser.parse_args()
+    create_project_directory(args.project, args.directory)
+    initialize_directory()
+    add_origin(args.userName, args.project)
+        
