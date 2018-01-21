@@ -42,3 +42,8 @@ def create_project_directory(project, directory='.'):
                     os.mkdir(part)
                     os.chdir(part)
             print('Directory setup complete')
+            
+def initialize_directory():
+    init = subprocess.Popen(['git', 'init'], stdout=subprocess.PIPE)
+    init.communicate()[0]
+    print('Project init complete')
